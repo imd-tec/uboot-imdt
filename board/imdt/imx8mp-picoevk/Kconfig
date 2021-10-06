@@ -1,0 +1,14 @@
+if TARGET_IMX8MP_IMDT_PICOEVK
+
+config SYS_BOARD
+	default "imx8mp-picoevk"
+
+config SYS_VENDOR
+	default "imdt"
+
+config SYS_CONFIG_NAME
+	default "imx8mp-imdt-picoevk"
+
+source "board/freescale/common/Kconfig"
+
+endif
