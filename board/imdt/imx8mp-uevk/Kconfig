@@ -1,0 +1,14 @@
+if TARGET_IMX8MP_IMDT_UEVK
+
+config SYS_BOARD
+	default "imx8mp-uevk"
+
+config SYS_VENDOR
+	default "imdt"
+
+config SYS_CONFIG_NAME
+	default "imx8mp-imdt-uevk"
+
+source "board/freescale/common/Kconfig"
+
+endif
