@@ -1,0 +1,6 @@
+i.MX8MP EVK BOARD
+M:	Paul Thomson <pault@imd-tec.com>
+S:	Maintained
+F:	board/imdt/imx8mp-uevk-2g/
+F:	include/configs/imx8mp-imdt-uevk-2g.h
+F:	configs/imx8mp_imdt_uevk_2g_defconfig
