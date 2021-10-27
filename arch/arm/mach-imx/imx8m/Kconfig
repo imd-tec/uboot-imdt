@@ -190,6 +190,16 @@ config TARGET_IMX8MP_IMDT_PICOEVK
 	select MISC
 	select SPL_CRYPTO_SUPPORT if SPL
 
+config TARGET_IMX8MP_IMDT_UEVK_2G
+	bool "IMDT i.MX8M Plus uEVK (2GB) board"
+	select IMX8MP
+	select SUPPORT_SPL
+	select IMX8M_LPDDR4
+	select FSL_CAAM
+	select FSL_BLOB
+	select MISC
+	select SPL_CRYPTO_SUPPORT if SPL
+
 config TARGET_IMX8MP_IMDT_UEVK
 	bool "IMDT i.MX8M Plus uEVK board"
 	select IMX8MP
@@ -297,6 +307,7 @@ source "board/beacon/imx8mn/Kconfig"
 source "board/phytec/phycore_imx8mm/Kconfig"
 source "board/phytec/phycore_imx8mp/Kconfig"
 source "board/imdt/imx8mp-picoevk/Kconfig"
+source "board/imdt/imx8mp-uevk-2g/Kconfig"
 source "board/imdt/imx8mp-uevk/Kconfig"
 
 endif
