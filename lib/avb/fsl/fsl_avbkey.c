@@ -1181,6 +1181,13 @@ bool hab_is_enabled(void)
 	}
 
 	if (lc != 0x80)
+#elif CONFIG_IMX8ULP
+	uint32_t lc;
+
+	lc = readl(FSB_BASE_ADDR + 0x41c);
+	lc &= 0x3f;
+
+	if (lc != 0x20)
 #elif CONFIG_ARCH_IMX8M
 	struct imx_sec_config_fuse_t *fuse =
 		(struct imx_sec_config_fuse_t *)&imx_sec_config_fuse;
@@ -1329,6 +1336,7 @@ int avb_set_public_key(uint8_t *staged_buffer, uint32_t size) {
 	return 0;
 }
 
+#ifdef CONFIG_GENERATE_MPPUBK
 int fastboot_get_mppubk(uint8_t *staged_buffer, uint32_t *size) {
 
 	if (!hab_is_enabled()) {
@@ -1347,5 +1355,6 @@ int fastboot_get_mppubk(uint8_t *staged_buffer, uint32_t *size) {
 
 	return 0;
 }
+#endif /* CONFIG_GENERATE_MPPUBK */
 #endif /* CONFIG_IMX_TRUSTY_OS && !defind(CONFIG_AVB_ATX) */
 #endif /* CONFIG_SPL_BUILD */

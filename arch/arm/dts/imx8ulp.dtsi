@@ -28,8 +28,9 @@
 		spi0 = &flexspi0;
 		spi2 = &flexspi2;
 		ethernet0 = &fec;
-		i2c7 = &lpi2c7;
 		i2c0 = &lpi2c0;
+		i2c7 = &lpi2c7;
+		i2c8 = &i3c2;
 		usbphy0 = &usbphy1;
 		usb0 = &usbotg1;
 		usbphy1 = &usbphy2;
@@ -169,6 +170,12 @@
 		#size-cells = <1>;
 		ranges = <0x0 0x0 0x0 0x80000000>;
 
+		pmc: pmc@28359000 {
+			compatible = "fsl,imx8ulp-pmc-temperature";
+			reg = <0x28359000 0x1000>;
+			adc = <&adc1>;
+		};
+
 		per_bridge0: bus@28000000 {
 			compatible = "simple-bus";
 			reg = <0x28000000 0x800000>;
@@ -198,6 +205,10 @@
 				compatible = "fsl,imx8ulp-lpi2c", "fsl,imx7ulp-lpi2c";
 				reg = <0x28098000 0x10000>;
 				status = "disabled";
+			};
+
+			adc1: adc1@0x280a2000 {
+				reg = <0x280a2000 0x1000>;
 			};
 		};
 
@@ -389,6 +400,21 @@
 				clocks = <&pcc3 IMX8ULP_CLK_TPM5>,
 					 <&pcc3 IMX8ULP_CLK_TPM5>;
 				clock-names = "ipg", "per";
+				status = "disabled";
+			};
+
+			i3c2: i3c@29360000 {
+				compatible = "fsl,imx8ulp-i3c";
+				reg = <0x29360000 0x10000>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+				interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+				clocks = <&pcc3 IMX8ULP_CLK_I3C2>,
+					 <&pcc3 IMX8ULP_CLK_I3C2>;
+				clock-names = "per", "ipg";
+				assigned-clocks = <&pcc3 IMX8ULP_CLK_I3C2>;
+				assigned-clock-parents = <&cgc1 IMX8ULP_CLK_FROSC_DIV2>;
+				assigned-clock-rates = <48000000>;
 				status = "disabled";
 			};
 

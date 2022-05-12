@@ -28,6 +28,7 @@
 #include <env.h>
 #include <env_internal.h>
 #include <linux/iopoll.h>
+#include <thermal.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -190,9 +191,6 @@ int m33_image_handshake(ulong timeout_ms)
 	int ret;
 	ulong timeout_us = timeout_ms * 1000;
 
-	/* enable MU0_MUB clock before access the register of MU0_MUB */
-	pcc_clock_enable(3, MU0_B_PCC3_SLOT, true);
-
 	/* Notify m33 that it's ready to do init srtm(enable mu receive interrupt and so on) */
 	setbits_le32(MU0_B_BASE_ADDR + 0x100, BIT(0)); /* set FCR F0 flag of MU0_MUB */
 
@@ -290,6 +288,22 @@ int print_cpuinfo(void)
 	       (cpurev & 0x000F0) >> 4, (cpurev & 0x0000F) >> 0,
 	       mxc_get_clock(MXC_ARM_CLK) / 1000000);
 
+#if defined(CONFIG_IMX_PMC_TEMPERATURE)
+	struct udevice *udev;
+	int ret, temp;
+
+	ret = uclass_get_device(UCLASS_THERMAL, 0, &udev);
+	if (!ret) {
+		ret = thermal_get_temp(udev, &temp);
+		if (!ret)
+			printf("CPU current temperature: %d\n", temp);
+		else
+			debug(" - failed to get CPU current temperature\n");
+	} else {
+		debug(" - failed to get CPU current temperature\n");
+	}
+#endif
+
 	printf("Reset cause: %s\n", get_reset_cause(cause));
 
 	printf("Boot mode: ");
@@ -319,15 +333,12 @@ static void disable_wdog(void __iomem *wdog_base)
 {
 	u32 val_cs = readl(wdog_base + 0x00);
 
-	if (!(val_cs & 0x80))
-		return;
-
 	dmb();
 	__raw_writel(REFRESH_WORD0, (wdog_base + 0x04)); /* Refresh the CNT */
 	__raw_writel(REFRESH_WORD1, (wdog_base + 0x04));
 	dmb();
 
-	if (!(val_cs & 800)) {
+	if (!(val_cs & 0x800)) {
 		dmb();
 		__raw_writel(UNLOCK_WORD0, (wdog_base + 0x04));
 		__raw_writel(UNLOCK_WORD1, (wdog_base + 0x04));
@@ -338,7 +349,7 @@ static void disable_wdog(void __iomem *wdog_base)
 	}
 	writel(0x0, (wdog_base + 0x0C)); /* Set WIN to 0 */
 	writel(0x400, (wdog_base + 0x08)); /* Set timeout to default 0x400 */
-	writel(0x120, (wdog_base + 0x00)); /* Disable it and set update */
+	writel(0x2120, (wdog_base + 0x00)); /* Change to 32bit cmd, disable it and set update */
 
 	while (!(readl(wdog_base + 0x00) & 0x400))
 		;
@@ -649,10 +660,10 @@ int trdc_set_access(void)
 	return 0;
 }
 
-void lpav_configure(void)
+void lpav_configure(bool lpav_to_m33)
 {
-	/* LPAV to APD */
-	setbits_le32(SIM_SEC_BASE_ADDR + 0x44, BIT(7));
+	if (!lpav_to_m33)
+		setbits_le32(SIM_SEC_BASE_ADDR + 0x44, BIT(7)); /* LPAV to APD */
 
 	/* PXP/GPU 2D/3D/DCNANO/MIPI_DSI/EPDC/HIFI4 to APD */
 	setbits_le32(SIM_SEC_BASE_ADDR + 0x4c, 0x7F);
@@ -721,7 +732,9 @@ int arch_cpu_init(void)
 				release_rdc(RDC_TRDC);
 
 			trdc_set_access();
-			lpav_configure();
+			lpav_configure(false);
+		} else {
+			lpav_configure(true);
 		}
 
 		/* Release xrdc, then allow A35 to write SRAM2 */
@@ -730,7 +743,7 @@ int arch_cpu_init(void)
 
 		xrdc_mrc_region_set_access(2, CONFIG_SPL_TEXT_BASE, 0xE00);
 
-		clock_init();
+		clock_init_early();
 	} else {
 		/* reconfigure core0 reset vector to ROM */
 		set_core0_reset_vector(0x1000);
@@ -850,6 +863,37 @@ u32 spl_arch_boot_image_offset(u32 image_offset, u32 rom_bt_dev)
 
 int ft_system_setup(void *blob, struct bd_info *bd)
 {
+	u32 uid[4];
+	u32 res;
+	int ret;
+	int nodeoff = fdt_path_offset(blob, "/soc");
+	/* Nibble 1st for major version
+	 * Nibble 0th for minor version.
+	 */
+	const u32 rev = 0x10;
+
+	if (nodeoff < 0) {
+		printf("Node to update the SoC serial number is not found.\n");
+		goto skip_upt;
+	}
+
+	ret = ahab_read_common_fuse(1, uid, 4, &res);
+	if (ret) {
+		printf("ahab read fuse failed %d, 0x%x\n", ret, res);
+		memset(uid, 0x0, 4 * sizeof(u32));
+	}
+
+	ret = fdt_setprop_u32(blob, nodeoff, "soc-rev", rev);
+	if (ret)
+		printf("Error[0x%x] fdt_setprop revision-number.\n", ret);
+
+	ret = fdt_setprop_u64(blob, nodeoff, "soc-serial",
+				(u64)uid[3] << 32 | uid[0]);
+	if (ret)
+		printf("Error[0x%x] fdt_setprop serial-number.\n", ret);
+
+
+skip_upt:
 	return ft_add_optee_node(blob, bd);
 }
 

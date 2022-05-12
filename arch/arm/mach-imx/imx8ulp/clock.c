@@ -101,11 +101,14 @@ void init_clk_ddr(void)
 	writel(0xc0000000, PCC5_LPDDR4_ADDR);
 
 	/* enable pll4 and ddrclk*/
-	cgc2_pll4_init();
-	cgc2_ddrclk_config(1, 1);
+	cgc2_pll4_init(true);
+	cgc2_ddrclk_config(4, 1);
 
 	/* enable ddr pcc */
 	writel(0xd0000000, PCC5_LPDDR4_ADDR);
+
+	/* Wait until ddrclk reg lock bit is cleared, so that the div update is finished */
+	cgc2_ddrclk_wait_unlock();
 
 	/* for debug */
 	/* setclkout_ddr(); */
@@ -144,33 +147,76 @@ int set_ddr_clk(u32 phy_freq_mhz)
 		return -EINVAL;
 	}
 
+	/* Wait until ddrclk reg lock bit is cleared, so that the div update is finished */
+	cgc2_ddrclk_wait_unlock();
+
 	return 0;
 }
 
-void clock_init(void)
+void clock_init_early(void)
 {
 	cgc1_soscdiv_init();
-	cgc1_init_core_clk();
 
 	init_clk_lpuart();
 
-	pcc_clock_enable(4, SDHC0_PCC4_SLOT, false);
-	pcc_clock_sel(4, SDHC0_PCC4_SLOT, PLL3_PFD1_DIV2);
-	pcc_clock_enable(4, SDHC0_PCC4_SLOT, true);
-	pcc_reset_peripheral(4, SDHC0_PCC4_SLOT, false);
-
-	pcc_clock_enable(4, SDHC1_PCC4_SLOT, false);
-	pcc_clock_sel(4, SDHC1_PCC4_SLOT, PLL3_PFD2_DIV1);
-	pcc_clock_enable(4, SDHC1_PCC4_SLOT, true);
-	pcc_reset_peripheral(4, SDHC1_PCC4_SLOT, false);
-
-	pcc_clock_enable(4, SDHC2_PCC4_SLOT, false);
-	pcc_clock_sel(4, SDHC2_PCC4_SLOT, PLL3_PFD2_DIV1);
-	pcc_clock_enable(4, SDHC2_PCC4_SLOT, true);
-	pcc_reset_peripheral(4, SDHC2_PCC4_SLOT, false);
-
 	/* Enable upower mu1 clk */
 	pcc_clock_enable(3, UPOWER_PCC3_SLOT, true);
+}
+
+/* This will be invoked after pmic voltage setting */
+void clock_init_late(void)
+{
+
+	if (IS_ENABLED(CONFIG_IMX8ULP_LD_MODE)) {
+		cgc1_init_core_clk(MHZ(500));
+	} else if (IS_ENABLED(CONFIG_IMX8ULP_ND_MODE)) {
+		cgc1_init_core_clk(MHZ(750));
+	} else {
+		cgc1_init_core_clk(MHZ(960));
+
+	}
+	/*
+	 * Audio use this frequency in kernel dts,
+	 * however nic use pll3 pfd0, we have to
+	 * make the freqency same as kernel to make nic
+	 * not being disabled
+	 */
+	cgc1_pll3_init(540672000);
+
+	if (IS_ENABLED(CONFIG_IMX8ULP_LD_MODE) || IS_ENABLED(CONFIG_IMX8ULP_ND_MODE)) {
+		pcc_clock_enable(4, SDHC0_PCC4_SLOT, false);
+		pcc_clock_sel(4, SDHC0_PCC4_SLOT, PLL3_PFD2_DIV2);
+		pcc_clock_enable(4, SDHC0_PCC4_SLOT, true);
+		pcc_reset_peripheral(4, SDHC0_PCC4_SLOT, false);
+
+		pcc_clock_enable(4, SDHC1_PCC4_SLOT, false);
+		pcc_clock_sel(4, SDHC1_PCC4_SLOT, PLL3_PFD2_DIV2);
+		pcc_clock_enable(4, SDHC1_PCC4_SLOT, true);
+		pcc_reset_peripheral(4, SDHC1_PCC4_SLOT, false);
+
+		pcc_clock_enable(4, SDHC2_PCC4_SLOT, false);
+		pcc_clock_sel(4, SDHC2_PCC4_SLOT, PLL3_PFD2_DIV2);
+		pcc_clock_enable(4, SDHC2_PCC4_SLOT, true);
+		pcc_reset_peripheral(4, SDHC2_PCC4_SLOT, false);
+	} else {
+		pcc_clock_enable(4, SDHC0_PCC4_SLOT, false);
+		pcc_clock_sel(4, SDHC0_PCC4_SLOT, PLL3_PFD1_DIV2);
+		pcc_clock_enable(4, SDHC0_PCC4_SLOT, true);
+		pcc_reset_peripheral(4, SDHC0_PCC4_SLOT, false);
+
+		pcc_clock_enable(4, SDHC1_PCC4_SLOT, false);
+		pcc_clock_sel(4, SDHC1_PCC4_SLOT, PLL3_PFD2_DIV1);
+		pcc_clock_enable(4, SDHC1_PCC4_SLOT, true);
+		pcc_reset_peripheral(4, SDHC1_PCC4_SLOT, false);
+
+		pcc_clock_enable(4, SDHC2_PCC4_SLOT, false);
+		pcc_clock_sel(4, SDHC2_PCC4_SLOT, PLL3_PFD2_DIV1);
+		pcc_clock_enable(4, SDHC2_PCC4_SLOT, true);
+		pcc_reset_peripheral(4, SDHC2_PCC4_SLOT, false);
+	}
+
+	/* enable MU0_MUB clock before access the register of MU0_MUB */
+	pcc_clock_enable(3, MU0_B_PCC3_SLOT, true);
 
 	/*
 	 * Enable clock division
@@ -228,6 +274,32 @@ u32 imx_get_i2cclk(u32 i2c_num)
 
 	return pcc_clock_get_rate(lpi2c_pcc_clks[i2c_num - 4] & 0xff,
 				  lpi2c_pcc_clks[i2c_num - 4] >> 8);
+}
+#endif
+
+#if IS_ENABLED(CONFIG_SYS_I2C_IMX_I3C)
+int enable_i3c_clk(unsigned char enable, u32 i3c_num)
+{
+	if (i3c_num != 8)
+		return -EINVAL;
+
+	if (enable) {
+		pcc_clock_enable(3, I3C2_PCC3_SLOT, false);
+		pcc_clock_sel(3, I3C2_PCC3_SLOT, SOSC_DIV2);
+		pcc_clock_enable(3, I3C2_PCC3_SLOT, true);
+		pcc_reset_peripheral(3, I3C2_PCC3_SLOT, false);
+	} else {
+		pcc_clock_enable(3, I3C2_PCC3_SLOT, false);
+	}
+	return 0;
+}
+
+u32 imx_get_i3cclk(u32 i3c_num)
+{
+	if (i3c_num != 8)
+		return 0;
+
+	return pcc_clock_get_rate(3, I3C2_PCC3_SLOT);
 }
 #endif
 
@@ -341,12 +413,23 @@ void enable_mipi_dsi_clk(unsigned char enable)
 	}
 }
 
+void enable_adc1_clk(bool enable)
+{
+	if (enable) {
+		pcc_clock_enable(1, ADC1_PCC1_SLOT, false);
+		pcc_clock_sel(1, ADC1_PCC1_SLOT, CM33_BUSCLK);
+		pcc_clock_enable(1, ADC1_PCC1_SLOT, true);
+		pcc_reset_peripheral(1, ADC1_PCC1_SLOT, false);
+	} else {
+		pcc_clock_enable(1, ADC1_PCC1_SLOT, false);
+	}
+}
+
 void reset_lcdclk(void)
 {
 	/* Disable clock and reset dcnano*/
 	pcc_clock_enable(5, DCNANO_PCC5_SLOT, false);
 	pcc_reset_peripheral(5, DCNANO_PCC5_SLOT, true);
-
 }
 
 void mxs_set_lcdclk(uint32_t base_addr, uint32_t freq_in_khz)

@@ -34,6 +34,8 @@
 
 #endif
 
+#define COUNTER_FREQUENCY       1000000 /* 1MHz */
+
 #define CONFIG_SERIAL_TAG
 
 #define CONFIG_REMAKE_ELF
@@ -70,8 +72,8 @@
 
 #define JAILHOUSE_ENV \
 	"jh_clk= \0 " \
-	"jh_mmcboot=setenv jh_clk clk_ignore_unused mem=1GB; run loadimage; run mmcboot\0 " \
-	"jh_netboot=setenv jh_clk clk_ignore_unused mem=1GB; run netboot\0 "
+	"jh_mmcboot=setenv jh_clk clk_ignore_unused mem=896MB; run loadimage; run mmcboot\0 " \
+	"jh_netboot=setenv jh_clk clk_ignore_unused mem=896MB; run netboot\0 "
 
 #define CONFIG_MFG_ENV_SETTINGS \
 	CONFIG_MFG_ENV_SETTINGS_DEFAULT \

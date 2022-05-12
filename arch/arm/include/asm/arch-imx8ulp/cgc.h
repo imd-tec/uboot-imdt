@@ -56,6 +56,10 @@ enum cgc_clk {
 	PLL4_PFD2_DIV2,
 	PLL4_PFD3_DIV1,
 	PLL4_PFD3_DIV2,
+	CM33_BUSCLK,
+	PLL1_VCO_DIV,
+	PLL0_PFD2_DIV,
+	PLL0_PFD1_DIV,
 };
 
 struct cgc1_regs {
@@ -142,12 +146,13 @@ struct cgc2_regs {
 };
 
 u32 cgc_clk_get_rate(enum cgc_clk clk);
-void cgc1_pll3_init(void);
-void cgc1_pll2_init(void);
+void cgc1_pll3_init(ulong freq);
+void cgc1_pll2_init(ulong freq);
 void cgc1_soscdiv_init(void);
-void cgc1_init_core_clk(void);
-void cgc2_pll4_init(void);
+void cgc1_init_core_clk(ulong freq);
+void cgc2_pll4_init(bool pll4_reset);
 void cgc2_ddrclk_config(u32 src, u32 div);
+void cgc2_ddrclk_wait_unlock(void);
 u32 cgc1_sosc_div(enum cgc_clk clk);
 void cgc1_enet_stamp_sel(u32 clk_src);
 void cgc2_pll4_pfd_config(enum cgc_clk pllpfd, u32 pfd);

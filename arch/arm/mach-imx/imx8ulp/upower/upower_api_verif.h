@@ -1,6 +1,6 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
 /* +FHDR------------------------------------------------------------------------
  * Copyright 2019-2021 NXP
- * NXP Confidential Proprietary
  * -----------------------------------------------------------------------------
  * FILE NAME      : upower_api_verif.h
  * DEPARTMENT     : BSTC - Campinas, Brazil
@@ -70,6 +70,4 @@
 
 int upwr_xcp_reg_access(const struct upwr_reg_access_t* access,
 			upwr_callb                      callb);
-
-
 #endif

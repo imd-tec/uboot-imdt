@@ -20,6 +20,7 @@
 #ifdef CONFIG_ARCH_LS1021A
 #include <asm/arch/immap_ls102xa.h>
 #endif
+#include <dm/lists.h>
 
 #define SHA256_BITS	256
 #define SHA256_BYTES	(256/8)
@@ -499,12 +500,8 @@ static int calc_img_key_hash(struct fsl_secboot_img_priv *img)
 		return ret;
 
 	ret = algo->hash_init(algo, &ctx);
-	if (ret) {
-		if (ctx)
-			free(ctx);
+	if (ret)
 		return ret;
-	}
-
 	/* Update hash for ESBC key */
 #ifdef CONFIG_KEY_REVOCATION
 	if (check_srk(img)) {
@@ -519,15 +516,12 @@ static int calc_img_key_hash(struct fsl_secboot_img_priv *img)
 			img->img_key, img->key_len, 1);
 	if (ret)
 		return ret;
-
 	/* Copy hash at destination buffer */
 	ret = algo->hash_finish(algo, ctx, hash_val, algo->digest_size);
 	if (ret) {
-		if (ctx)
-			free(ctx);
+		free(ctx);
 		return ret;
 	}
-
 	for (i = 0; i < SHA256_BYTES; i++)
 		img->img_key_hash[i] = hash_val[i];
 
@@ -554,18 +548,14 @@ static int calc_esbchdr_esbc_hash(struct fsl_secboot_img_priv *img)
 
 	ret = algo->hash_init(algo, &ctx);
 	/* Copy hash at destination buffer */
-	if (ret) {
-		free(ctx);
+	if (ret)
 		return ret;
-	}
 
 	/* Update hash for CSF Header */
 	ret = algo->hash_update(algo, ctx,
 		(u8 *)&img->hdr, sizeof(struct fsl_secboot_img_hdr), 0);
-	if (ret) {
-		free(ctx);
+	if (ret)
 		return ret;
-	}
 
 	/* Update the hash with that of srk table if srk flag is 1
 	 * If IE Table is selected, key is not added in the hash
@@ -592,22 +582,17 @@ static int calc_esbchdr_esbc_hash(struct fsl_secboot_img_priv *img)
 		key_hash = 1;
 	}
 #endif
-	if (ret) {
-		free(ctx);
+	if (ret)
 		return ret;
-	}
 	if (!key_hash) {
 		free(ctx);
 		return ERROR_KEY_TABLE_NOT_FOUND;
 	}
-
 	/* Update hash for actual Image */
 	ret = algo->hash_update(algo, ctx,
 		(u8 *)(*(img->img_addr_ptr)), img->img_size, 1);
-	if (ret) {
-		free(ctx);
+	if (ret)
 		return ret;
-	}
 
 	/* Copy hash at destination buffer */
 	ret = algo->hash_finish(algo, ctx, hash_val, algo->digest_size);
@@ -822,6 +807,13 @@ static int calculate_cmp_img_sig(struct fsl_secboot_img_priv *img)
 	prop.num_bits = key_len * 8;
 	prop.exp_len = key_len;
 
+#if defined(CONFIG_SPL_BUILD)
+	ret = device_bind_driver(NULL, "fsl_rsa_mod_exp", "fsl_rsa_mod_exp", NULL);
+	if (ret) {
+		printf("Couldn't bind fsl_rsa_mod_exp driver (%d)\n", ret);
+		return -EINVAL;
+	}
+#endif
 	ret = uclass_get_device(UCLASS_MOD_EXP, 0, &mod_exp_dev);
 	if (ret) {
 		printf("RSA: Can't find Modular Exp implementation\n");
