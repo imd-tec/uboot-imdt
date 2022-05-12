@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
  * Copyright 2019 NXP
+ * Copyright 2022 IMD Technologies
  */
 
 /dts-v1/;
@@ -9,7 +10,7 @@
 #include "imx8mp.dtsi"
 
 / {
-	model = "IMD Technologies i.MX8M Plus uEVK board";
+	model = "IMD Technologies uEVK Board";
 	compatible = "imdt,imx8mp-imdt-uevk", "fsl,imx8mp";
 
 	chosen {
@@ -241,25 +242,13 @@
 	status = "okay";
 };
 
-// &lcdif1 {
-// 	status = "okay";
-// };
+&lcdif1 {
+	status = "disabled";
+};
 
-// &mipi_dsi {
-// 	status = "okay";
-
-// 	port@1 {
-// 		dsim_to_adv7535: endpoint {
-// 			remote-endpoint = <&adv7535_from_dsim>;
-// 		};
-// 	};
-
-// 	port@2 {
-// 		dsim_to_rm67191: endpoint {
-// 			remote-endpoint = <&rm67191_from_dsim>;
-// 		};
-// 	};
-// };
+&mipi_dsi {
+	status = "disabled";
+};
 
 &snvs_pwrkey {
 	status = "okay";
@@ -273,13 +262,6 @@
 };
 
 &usb3_phy0 {
-	// vbus-power-supply = <&ptn5110>;
-	// fsl,phy-tx-vref-tune = <0xe>;
-	// fsl,phy-tx-preemp-amp-tune = <3>;
-	// fsl,phy-tx-vboost-level = <5>;
-	// fsl,phy-comp-dis-tune = <7>;
-	// fsl,pcs-tx-deemph-3p5db = <0x21>;
-	// fsl,phy-pcs-tx-swing-full = <0x7f>;
 	status = "okay";
 };
 
@@ -295,12 +277,6 @@
 	usb-role-switch;
 	role-switch-default-mode = "none";
 	status = "okay";
-
-	// port {
-	// 	usb3_drd_sw: endpoint {
-	// 		remote-endpoint = <&typec_dr_sw>;
-	// 	};
-	// };
 };
 
 &usb3_phy1 {
@@ -350,72 +326,6 @@
 
 &iomuxc {
 	pinctrl-names = "default";
-
-	// pinctrl_eqos: eqosgrp {
-	// 	fsl,pins = <
-	// 		MX8MP_IOMUXC_ENET_MDC__ENET_QOS_MDC	0x3
-	// 		MX8MP_IOMUXC_ENET_MDIO__ENET_QOS_MDIO	0x3
-	// 		MX8MP_IOMUXC_ENET_RD0__ENET_QOS_RGMII_RD0	0x91
-	// 		MX8MP_IOMUXC_ENET_RD1__ENET_QOS_RGMII_RD1	0x91
-	// 		MX8MP_IOMUXC_ENET_RD2__ENET_QOS_RGMII_RD2	0x91
-	// 		MX8MP_IOMUXC_ENET_RD3__ENET_QOS_RGMII_RD3	0x91
-	// 		MX8MP_IOMUXC_ENET_RXC__CCM_ENET_QOS_CLOCK_GENERATE_RX_CLK	0x91
-	// 		MX8MP_IOMUXC_ENET_RX_CTL__ENET_QOS_RGMII_RX_CTL	0x91
-	// 		MX8MP_IOMUXC_ENET_TD0__ENET_QOS_RGMII_TD0		0x1f
-	// 		MX8MP_IOMUXC_ENET_TD1__ENET_QOS_RGMII_TD1		0x1f
-	// 		MX8MP_IOMUXC_ENET_TD2__ENET_QOS_RGMII_TD2		0x1f
-	// 		MX8MP_IOMUXC_ENET_TD3__ENET_QOS_RGMII_TD3		0x1f
-	// 		MX8MP_IOMUXC_ENET_TX_CTL__ENET_QOS_RGMII_TX_CTL	0x1f
-	// 		MX8MP_IOMUXC_ENET_TXC__CCM_ENET_QOS_CLOCK_GENERATE_TX_CLK	0x1f
-	// 		MX8MP_IOMUXC_SAI2_RXC__GPIO4_IO22		0x19
-	// 	>;
-	// };
-
-	// pinctrl_fec: fecgrp {
-	// 	fsl,pins = <
-	// 		MX8MP_IOMUXC_SAI1_RXD2__ENET1_MDC		0x3
-	// 		MX8MP_IOMUXC_SAI1_RXD3__ENET1_MDIO		0x3
-	// 		MX8MP_IOMUXC_SAI1_RXD4__ENET1_RGMII_RD0		0x91
-	// 		MX8MP_IOMUXC_SAI1_RXD5__ENET1_RGMII_RD1		0x91
-	// 		MX8MP_IOMUXC_SAI1_RXD6__ENET1_RGMII_RD2		0x91
-	// 		MX8MP_IOMUXC_SAI1_RXD7__ENET1_RGMII_RD3		0x91
-	// 		MX8MP_IOMUXC_SAI1_TXC__ENET1_RGMII_RXC		0x91
-	// 		MX8MP_IOMUXC_SAI1_TXFS__ENET1_RGMII_RX_CTL	0x91
-	// 		MX8MP_IOMUXC_SAI1_TXD0__ENET1_RGMII_TD0		0x1f
-	// 		MX8MP_IOMUXC_SAI1_TXD1__ENET1_RGMII_TD1		0x1f
-	// 		MX8MP_IOMUXC_SAI1_TXD2__ENET1_RGMII_TD2		0x1f
-	// 		MX8MP_IOMUXC_SAI1_TXD3__ENET1_RGMII_TD3		0x1f
-	// 		MX8MP_IOMUXC_SAI1_TXD4__ENET1_RGMII_TX_CTL	0x1f
-	// 		MX8MP_IOMUXC_SAI1_TXD5__ENET1_RGMII_TXC		0x1f
-	// 		MX8MP_IOMUXC_SAI1_RXD0__GPIO4_IO02		0x19
-	// 	>;
-	// };
-
-	// pinctrl_flexcan1: flexcan1grp {
-	// 	fsl,pins = <
-	// 		MX8MP_IOMUXC_SPDIF_RX__CAN1_RX          0x154
-	// 		MX8MP_IOMUXC_SPDIF_TX__CAN1_TX          0x154
-	// 	>;
-	// };
-
-	// pinctrl_flexcan2: flexcan2grp {
-	// 	fsl,pins = <
-	// 		MX8MP_IOMUXC_SAI5_MCLK__CAN2_RX         0x154
-	// 		MX8MP_IOMUXC_SAI5_RXD3__CAN2_TX         0x154
-	// 	>;
-	// };
-
-	// pinctrl_flexcan1_reg: flexcan1reggrp {
-	// 	fsl,pins = <
-	// 		MX8MP_IOMUXC_SPDIF_EXT_CLK__GPIO5_IO05  0x154   /* CAN1_STBY */
-	// 	>;
-	// };
-
-	// pinctrl_flexcan2_reg: flexcan2reggrp {
-	// 	fsl,pins = <
-	// 		MX8MP_IOMUXC_SAI2_MCLK__GPIO4_IO27      0x154   /* CAN2_STBY */
-	// 	>;
-	// };
 
 	pinctrl_flexspi0: flexspi0grp {
 		fsl,pins = <
@@ -508,29 +418,11 @@
 		>;
 	};
 
-	// pinctrl_mipi_dsi_en: mipi_dsi_en {
-	// 	fsl,pins = <
-	// 		MX8MP_IOMUXC_GPIO1_IO08__GPIO1_IO08	0x16
-	// 	>;
-	// };
-
 	pinctrl_pmic: pmicirq {
 		fsl,pins = <
 			MX8MP_IOMUXC_GPIO1_IO03__GPIO1_IO03	0x41
 		>;
 	};
-
-	// pinctrl_typec: typec1grp {
-	// 	fsl,pins = <
-	// 		MX8MP_IOMUXC_SAI1_TXD7__GPIO4_IO19	0x1c4
-	// 	>;
-	// };
-
-	// pinctrl_typec_mux: typec1muxgrp {
-	// 	fsl,pins = <
-	// 		MX8MP_IOMUXC_SAI1_MCLK__GPIO4_IO20	0x16
-	// 	>;
-	// };
 
 	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmc {
 		fsl,pins = <

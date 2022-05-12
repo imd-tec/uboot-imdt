@@ -1,0 +1,8 @@
+IMD Technologies Pico v2 SoM and Carrier Board
+M:	Paul Thomson <pault@imd-tec.com>
+S:	Maintained
+F:  arch/arm/dts/imx8mp-imdt-pico-v2.dts
+F:  arch/arm/dts/imx8mp-imdt-pico-v2-u-boot.dtsi
+F:	board/imdt/imx8mp-pico-v2/
+F:	include/configs/imx8mp-imdt-pico-v2.h
+F:	configs/imx8mp_imdt_pico_v2_defconfig

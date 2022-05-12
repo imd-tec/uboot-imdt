@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright 2019 NXP
- * Copyright (c) 2021 IMD Technologies
+ * Copyright (c) 2022 IMD Technologies
  */
 
 #include <common.h>
@@ -291,8 +291,8 @@ int board_late_init(void)
 	board_late_mmc_env_init();
 #endif
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
-	env_set("board_name", "uEVK");
-	env_set("board_rev", "iMX8MP");
+	env_set("board_name", "Pico");
+	env_set("board_rev", "v2");
 #endif
 
 	return 0;
