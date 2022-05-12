@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright 2019 NXP
+ * Copyright (c) 2022 IMD Technologies
  */
 #include "imx8mp-sec-def.h"
 
@@ -104,20 +105,12 @@
 	u-boot,dm-spl;
 };
 
-&pinctrl_reg_usdhc2_vmmc {
-	u-boot,dm-spl;
-};
-
 &reg_usdhc2_vmmc {
 	u-boot,dm-spl;
 	u-boot,off-on-delay-us = <20000>;
 };
 
 &pinctrl_uart2 {
-	u-boot,dm-spl;
-};
-
-&pinctrl_usdhc2_gpio {
 	u-boot,dm-spl;
 };
 
@@ -181,6 +174,14 @@
 	u-boot,dm-spl;
 };
 
+&i2c4 {
+	u-boot,dm-spl;
+};
+
+&i2c6 {
+	u-boot,dm-spl;
+};
+
 &pinctrl_i2c1 {
 	u-boot,dm-spl;
 };
@@ -207,8 +208,8 @@
 
 &usdhc3 {
 	u-boot,dm-spl;
-	mmc-hs400-1_8v;
-	mmc-hs400-enhanced-strobe;
+	sd-uhs-sdr104;
+	sd-uhs-ddr50;
 	assigned-clocks = <&clk IMX8MP_CLK_USDHC3>;
 	assigned-clock-rates = <400000000>;
 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_400M>;
@@ -228,23 +229,6 @@
 
 &pinctrl_pmic {
 	u-boot,dm-spl;
-};
-
-&eqos {
-	compatible = "fsl,imx-eqos";
-	/delete-property/ assigned-clocks;
-	/delete-property/ assigned-clock-parents;
-	/delete-property/ assigned-clock-rates;
-
-	phy-reset-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
-	phy-reset-duration = <15>;
-	phy-reset-post-delay = <100>;
-};
-
-&fec {
-	phy-reset-gpios = <&gpio4 2 GPIO_ACTIVE_LOW>;
-	phy-reset-duration = <15>;
-	phy-reset-post-delay = <100>;
 };
 
 &flexspi {

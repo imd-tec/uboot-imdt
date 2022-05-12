@@ -1,8 +1,0 @@
-i.MX8MP EVK BOARD
-M:	Paul Thomson <pault@imd-tec.com>
-S:	Maintained
-F:  arch/arm/dts/imx8mp-imdt-picoevk.dts
-F:  arch/arm/dts/imx8mp-imdt-picoevk-u-boot.dtsi
-F:	board/imdt/imx8mp-picoevk/
-F:	include/configs/imx8mp-imdt-picoevk.h
-F:	configs/imx8mp_imdt_picoevk_defconfig

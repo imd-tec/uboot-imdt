@@ -1,10 +1,10 @@
 #
-# Copyright 2019 NXP
+# Copyright 2022 IMD Technologies
 #
 # SPDX-License-Identifier:      GPL-2.0+
 #
 
-obj-y += imx8mp_imdt_uevk_2g.o
+obj-y += imx8mp_imdt_pico_v2.o
 obj-y += mmc.o
 
 ifdef CONFIG_SPL_BUILD

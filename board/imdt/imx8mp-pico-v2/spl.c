@@ -68,6 +68,14 @@ void spl_dram_init(void)
 	ddr_init(&dram_timing);
 }
 
+#define IR_LED_ENABLE_GPIO IMX_GPIO_NR(2, 19)
+
+void disable_ir_led(void)
+{
+	gpio_request(IR_LED_ENABLE_GPIO, "ir_led_enable");
+	gpio_direction_output(IR_LED_ENABLE_GPIO, 0);
+}
+
 #if CONFIG_IS_ENABLED(DM_PMIC_PCA9450)
 int power_init_board(void)
 {
@@ -178,11 +186,13 @@ void board_init_f(ulong dummy)
 					"clock-controller@30380000",
 					&dev);
 	if (ret < 0) {
-		printf("Failed to find clock node. Check device tree\n");
+		printf("Failed to find clock node. Check device tree (%d)\n", ret);
 		hang();
 	}
 
 	enable_tzc380();
+
+	disable_ir_led();
 
 	power_init_board();
 

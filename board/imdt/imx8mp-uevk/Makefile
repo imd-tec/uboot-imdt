@@ -1,5 +1,5 @@
 #
-# Copyright 2019 NXP
+# Copyright 2022 IMD Technologies
 #
 # SPDX-License-Identifier:      GPL-2.0+
 #
