@@ -253,12 +253,19 @@ int board_phy_config(struct phy_device *phydev)
 }
 #endif
 
+#define USBC_MUX_EN IMX_GPIO_NR(4, 18)
+
 #define DISPMIX				13
 #define MIPI				15
 
 int board_init(void)
 {
 	struct arm_smccc_res res;
+
+	/* turn on the USBC mux */
+
+	gpio_request(USBC_MUX_EN, "usbc_mux_en");
+	gpio_direction_output(USBC_MUX_EN, 0);
 
 	if (CONFIG_IS_ENABLED(FEC_MXC)) {
 		setup_fec();
