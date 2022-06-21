@@ -484,8 +484,14 @@ static int env_mmc_load(void)
 fini:
 	fini_mmc_for_env(mmc);
 err:
-	if (ret)
+	if (ret) {
 		env_set_default(errmsg, 0);
+
+		if (-ENOMSG == ret) {
+			printf("*** Saving default environment to MMC\n");
+			env_mmc_save();
+		}
+	}
 
 	return ret;
 }
