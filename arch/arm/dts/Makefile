@@ -877,6 +877,7 @@ dtb-$(CONFIG_ARCH_IMX8M) += \
 	imx8mp-ddr4-evk.dtb \
 	imx8mp-evk.dtb \
 	imx8mp-imdt-pico-v2.dtb \
+	imx8mp-imdt-pico-v3.dtb \
 	imx8mp-imdt-uevk.dtb \
 	imx8mp-phyboard-pollux-rdk.dtb \
 	imx8mq-pico-pi.dtb \

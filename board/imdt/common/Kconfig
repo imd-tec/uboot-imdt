@@ -1,0 +1,5 @@
+config IMDT_PICO_COMMON
+	bool "Common functions for IMDT's Pico boards"
+	default y
+	help
+	  Include the common functions for IMDT's Pico boards
