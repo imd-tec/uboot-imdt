@@ -45,14 +45,6 @@ static iomux_v3_cfg_t const wdog_pads[] = {
 	MX8MP_PAD_GPIO1_IO02__WDOG1_WDOG_B  | MUX_PAD_CTRL(WDOG_PAD_CTRL),
 };
 
-#ifdef CONFIG_NAND_MXS
-
-static void setup_gpmi_nand(void)
-{
-	init_nand_clk();
-}
-#endif
-
 int board_early_init_f(void)
 {
 	struct wdog_regs *wdog = (struct wdog_regs *)WDOG1_BASE_ADDR;
@@ -193,7 +185,6 @@ static void dwc3_nxp_usb_phy_init(struct dwc3_device *dwc3)
 #endif
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
-#define USB2_PWR_EN IMX_GPIO_NR(1, 14)
 int board_usb_init(int index, enum usb_init_type init)
 {
 	int ret = 0;
@@ -224,28 +215,6 @@ int board_usb_cleanup(int index, enum usb_init_type init)
 
 #endif
 
-static void setup_fec(void)
-{
-	struct iomuxc_gpr_base_regs *gpr =
-		(struct iomuxc_gpr_base_regs *)IOMUXC_GPR_BASE_ADDR;
-
-	/* Enable RGMII TX clk output */
-	setbits_le32(&gpr->gpr[1], BIT(22));
-}
-
-static int setup_eqos(void)
-{
-	struct iomuxc_gpr_base_regs *gpr =
-		(struct iomuxc_gpr_base_regs *)IOMUXC_GPR_BASE_ADDR;
-
-	/* set INTF as RGMII, enable RGMII TXC clock */
-	clrsetbits_le32(&gpr->gpr[1],
-			IOMUXC_GPR_GPR1_GPR_ENET_QOS_INTF_SEL_MASK, BIT(16));
-	setbits_le32(&gpr->gpr[1], BIT(19) | BIT(21));
-
-	return set_clk_eqos(ENET_125MHZ);
-}
-
 #if CONFIG_IS_ENABLED(NET)
 int board_phy_config(struct phy_device *phydev)
 {
@@ -255,7 +224,7 @@ int board_phy_config(struct phy_device *phydev)
 }
 #endif
 
-#define USBC_MUX_EN IMX_GPIO_NR(4, 18)
+#define USBC_MUX_EN			IMX_GPIO_NR(4, 18)
 
 #define DISPMIX				13
 #define MIPI				15
@@ -268,18 +237,6 @@ int board_init(void)
 
 	gpio_request(USBC_MUX_EN, "usbc_mux_en");
 	gpio_direction_output(USBC_MUX_EN, 0);
-
-	if (CONFIG_IS_ENABLED(FEC_MXC)) {
-		setup_fec();
-	}
-
-	if (CONFIG_IS_ENABLED(DWC_ETH_QOS)) {
-		setup_eqos();
-	}
-
-#ifdef CONFIG_NAND_MXS
-	setup_gpmi_nand();
-#endif
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
 	init_usb_clk();
@@ -295,9 +252,9 @@ int board_init(void)
 
 	hw_ver_init();
 
-	if (hw_ver_is_pico_v2()) {
+	if (hw_ver_is_pico_v3()) {
 		printf("\n");
-		printf("HW: Pico v1/v2 detected\n");
+		printf("HW: Pico v3 detected\n");
 		printf("\n");
 	} else {
 		printf("\n");
@@ -317,7 +274,7 @@ int board_late_init(void)
 #endif
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	env_set("board_name", "Pico");
-	env_set("board_rev", "v2");
+	env_set("board_rev", "v3");
 #endif
 
 	return 0;

@@ -1,0 +1,8 @@
+IMD Technologies Pico v3 Board
+M:	Paul Thomson <pault@imd-tec.com>
+S:	Maintained
+F:  arch/arm/dts/imx8mp-imdt-pico-v3.dts
+F:  arch/arm/dts/imx8mp-imdt-pico-v3-u-boot.dtsi
+F:	board/imdt/imx8mp-pico-v3/
+F:	include/configs/imx8mp-imdt-pico-v3.h
+F:	configs/imx8mp_imdt_pico_v3_defconfig
