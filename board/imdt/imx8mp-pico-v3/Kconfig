@@ -1,3 +1,7 @@
+#
+# IM-PCA-0003
+#
+
 if TARGET_IMX8MP_IMDT_PICO_V3
 
 config SYS_BOARD
@@ -8,6 +12,26 @@ config SYS_VENDOR
 
 config SYS_CONFIG_NAME
 	default "imx8mp-imdt-pico-v3"
+
+source "board/freescale/common/Kconfig"
+source "board/imdt/common/Kconfig"
+
+endif
+
+#
+# IM-PCA-0004
+#
+
+if TARGET_IMX8MP_IMDT_PICO_V3_0004
+
+config SYS_BOARD
+	default "imx8mp-pico-v3"
+
+config SYS_VENDOR
+	default "imdt"
+
+config SYS_CONFIG_NAME
+	default "imx8mp-imdt-pico-v3-0004"
 
 source "board/freescale/common/Kconfig"
 source "board/imdt/common/Kconfig"
