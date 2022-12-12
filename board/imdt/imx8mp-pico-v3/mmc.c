@@ -34,12 +34,29 @@ void board_late_mmc_env_init(void)
 {
 	char cmd[32];
 	char mmcblk[32];
+	char *mmcroot;
+
 	u32 dev_no = mmc_get_env_dev();
 
 	if (!check_mmc_autodetect())
 		return;
 
 	env_set_ulong("mmcdev", dev_no);
+
+	/* Get the mmcroot variable */
+	mmcroot = env_get("mmcroot");
+
+	/* Make a copy of it */
+	snprintf(mmcblk, 32, "%s", mmcroot);
+
+	/*
+	 * The value for mmcroot is of the form "/dev/mmcblk2p2 rootwait rw".
+	 * We set the 12th character to the current mmc block device.
+	 */
+	mmcblk[11] = ('0' + mmc_map_to_kernel_blk(dev_no));
+
+	/* Store the new value */
+	env_set("mmcroot", mmcblk);
 
 	sprintf(cmd, "mmc dev %d", dev_no);
 	run_command(cmd, 0);
