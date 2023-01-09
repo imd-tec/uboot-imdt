@@ -210,6 +210,16 @@ config TARGET_IMX8MP_IMDT_PICO_V3_0004
 	select MISC
 	select SPL_CRYPTO_SUPPORT if SPL
 
+config TARGET_IMX8MP_IMDT_PICO_V3_0005
+	bool "IMDT Pico v3 Board [IM-PCA-0005]"
+	select IMX8MP
+	select SUPPORT_SPL
+	select IMX8M_LPDDR4
+	select FSL_CAAM
+	select FSL_BLOB
+	select MISC
+	select SPL_CRYPTO_SUPPORT if SPL
+
 config TARGET_IMX8MP_IMDT_UEVK
 	bool "IMDT i.MX8M Plus uEVK board"
 	select IMX8MP

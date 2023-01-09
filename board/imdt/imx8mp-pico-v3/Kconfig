@@ -37,3 +37,23 @@ source "board/freescale/common/Kconfig"
 source "board/imdt/common/Kconfig"
 
 endif
+
+#
+# IM-PCA-0005
+#
+
+if TARGET_IMX8MP_IMDT_PICO_V3_0005
+
+config SYS_BOARD
+	default "imx8mp-pico-v3"
+
+config SYS_VENDOR
+	default "imdt"
+
+config SYS_CONFIG_NAME
+	default "imx8mp-imdt-pico-v3-0005"
+
+source "board/freescale/common/Kconfig"
+source "board/imdt/common/Kconfig"
+
+endif
