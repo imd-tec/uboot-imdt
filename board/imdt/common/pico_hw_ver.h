@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (c) 2022 IMD Technologies
+ * Copyright (c) 2022-2023 IMD Technologies
  */
 
 #ifndef PICO_HW_VER_H
@@ -11,6 +11,7 @@
 enum pico_hw_version {
 	IMDT_PICO_V2 = 0,
 	IMDT_PICO_V3,
+	IMDT_PICO_E,
 };
 
 /**
@@ -33,5 +34,10 @@ bool hw_ver_is_pico_v2(void);
  * @brief Tests to see if this is a Pico v3 board
  */
 bool hw_ver_is_pico_v3(void);
+
+/**
+ * @brief Tests to see if this is a Pico e board
+ */
+bool hw_ver_is_pico_e(void);
 
 #endif
