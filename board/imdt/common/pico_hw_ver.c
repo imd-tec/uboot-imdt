@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (c) 2022 IMD Technologies
+ * Copyright (c) 2022-2023 IMD Technologies
  */
 
 #include "pico_hw_ver.h"
@@ -60,6 +60,13 @@ void hw_ver_init(void) {
  */
 int hw_ver_get(void) {
 	return s_hw_ver;
+}
+
+/**
+ *
+ */
+bool hw_ver_is_pico_e(void) {
+	return (s_hw_ver == IMDT_PICO_E);
 }
 
 /**
