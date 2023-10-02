@@ -180,6 +180,16 @@ config TARGET_IMX8MP_DDR4_EVK
 	select MISC
 	select SPL_CRYPTO_SUPPORT if SPL
 
+config TARGET_IMX8MP_IMDT_PICO_EM
+	bool "IMDT Pico-EM Board"
+	select IMX8MP
+	select SUPPORT_SPL
+	select IMX8M_LPDDR4
+	select FSL_CAAM
+	select FSL_BLOB
+	select MISC
+	select SPL_CRYPTO_SUPPORT if SPL
+
 config TARGET_IMX8MP_IMDT_PICO_E
 	bool "IMDT Pico-E Board"
 	select IMX8MP
@@ -336,6 +346,7 @@ source "board/beacon/imx8mm/Kconfig"
 source "board/beacon/imx8mn/Kconfig"
 source "board/phytec/phycore_imx8mm/Kconfig"
 source "board/phytec/phycore_imx8mp/Kconfig"
+source "board/imdt/imx8mp-pico-em/Kconfig"
 source "board/imdt/imx8mp-pico-e/Kconfig"
 source "board/imdt/imx8mp-pico-v2/Kconfig"
 source "board/imdt/imx8mp-pico-v3/Kconfig"

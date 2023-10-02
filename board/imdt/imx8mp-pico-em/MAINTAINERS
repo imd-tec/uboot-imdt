@@ -1,0 +1,8 @@
+IMD Technologies Pico-EM Board
+M:	William Bagshaw <william.bagshaw@imd-tec.com>
+S:	Maintained
+F:  arch/arm/dts/imx8mp-imdt-pico-em.dts
+F:  arch/arm/dts/imx8mp-imdt-pico-em-u-boot.dtsi
+F:	board/imdt/imx8mp-pico-em/
+F:	include/configs/imx8mp-imdt-pico-em.h
+F:	configs/imx8mp_imdt_pico_em_defconfig

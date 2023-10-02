@@ -876,6 +876,7 @@ dtb-$(CONFIG_ARCH_IMX8M) += \
 	imx8mq-phanbell.dtb \
 	imx8mp-ddr4-evk.dtb \
 	imx8mp-evk.dtb \
+	imx8mp-imdt-pico-em.dtb \
 	imx8mp-imdt-pico-e.dtb \
 	imx8mp-imdt-pico-v2.dtb \
 	imx8mp-imdt-pico-v3.dtb \
