@@ -62,23 +62,3 @@ int hw_ver_get(void) {
 	return s_hw_ver;
 }
 
-/**
- *
- */
-bool hw_ver_is_pico_e(void) {
-	return (s_hw_ver == IMDT_PICO_E);
-}
-
-/**
- *
- */
-bool hw_ver_is_pico_v2(void) {
-	return (s_hw_ver == IMDT_PICO_V2);
-}
-
-/**
- *
- */
-bool hw_ver_is_pico_v3(void) {
-	return (s_hw_ver == IMDT_PICO_V3);
-}

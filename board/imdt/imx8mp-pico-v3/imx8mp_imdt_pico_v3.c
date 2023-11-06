@@ -248,22 +248,6 @@ int board_init(void)
 	arm_smccc_smc(IMX_SIP_GPC, IMX_SIP_GPC_PM_DOMAIN,
 		      MIPI, true, 0, 0, 0, 0, &res);
 
-	/* check the board version */
-
-	hw_ver_init();
-
-	if (hw_ver_is_pico_v3()) {
-		printf("\n");
-		printf("HW: Pico v3 detected\n");
-		printf("\n");
-	} else {
-		printf("\n");
-		printf("***********************************\n");
-		printf("HW: Unsupported Pico board detected\n");
-		printf("***********************************\n");
-		printf("\n");
-	}
-
 	return 0;
 }
 
