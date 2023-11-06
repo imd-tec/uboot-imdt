@@ -8,12 +8,6 @@
 
 #include <stdbool.h>
 
-enum pico_hw_version {
-	IMDT_PICO_V2 = 0,
-	IMDT_PICO_V3,
-	IMDT_PICO_E,
-};
-
 /**
  * @brief Initialises the HW version inputs and caches the version number
  */
@@ -24,20 +18,5 @@ void hw_ver_init(void);
  * @return State of the two HW_VER GPIO inputs
  */
 int hw_ver_get(void);
-
-/**
- * @brief Tests to see if this is a Pico v1/v2 board
- */
-bool hw_ver_is_pico_v2(void);
-
-/**
- * @brief Tests to see if this is a Pico v3 board
- */
-bool hw_ver_is_pico_v3(void);
-
-/**
- * @brief Tests to see if this is a Pico e board
- */
-bool hw_ver_is_pico_e(void);
 
 #endif
