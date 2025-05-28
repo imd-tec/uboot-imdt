@@ -9,6 +9,6 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "imx8mp-imdt-uevk"
 
-source "board/freescale/common/Kconfig"
+
 
 endif

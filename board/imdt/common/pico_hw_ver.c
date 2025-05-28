@@ -21,6 +21,7 @@ int hw_ver_gpios[] = {
 
 #define HW_VER_PAD_CTRL		(PAD_CTL_DSE1 | PAD_CTL_PE)
 #define HW_VER_NO_PULL_PAD_CTRL	(PAD_CTL_DSE1)
+#define IR_LED_ENABLE_GPIO IMX_GPIO_NR(2, 19)
 
 static iomux_v3_cfg_t const hw_ver_pads[] = {
 	MX8MP_PAD_SAI2_RXC__GPIO4_IO22 | MUX_PAD_CTRL(HW_VER_PAD_CTRL),
@@ -62,3 +63,13 @@ int hw_ver_get(void) {
 	return s_hw_ver;
 }
 
+void disable_ir_led(void)
+{
+	#if 1
+	// Uncommented as this prevents booting , I think its because the SPL is getting too big
+	gpio_request(IR_LED_ENABLE_GPIO, "ir_led_enable");
+	gpio_direction_output(IR_LED_ENABLE_GPIO, 0);
+	gpio_free(IR_LED_ENABLE_GPIO);
+	#endif
+
+}

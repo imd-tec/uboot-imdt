@@ -192,7 +192,7 @@ void board_init_f(ulong dummy)
 
 	enable_tzc380();
 
-	disable_ir_led();
+	//disable_ir_led(); // Disable IR LED to save power
 
 	power_init_board();
 

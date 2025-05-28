@@ -18,5 +18,7 @@ void hw_ver_init(void);
  * @return State of the two HW_VER GPIO inputs
  */
 int hw_ver_get(void);
+/* Disables the IR Led*/
+void disable_ir_led(void);
 
 #endif

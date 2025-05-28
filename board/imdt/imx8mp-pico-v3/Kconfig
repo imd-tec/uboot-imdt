@@ -13,7 +13,6 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "imx8mp-imdt-pico-v3"
 
-source "board/freescale/common/Kconfig"
 source "board/imdt/common/Kconfig"
 
 endif
@@ -33,7 +32,7 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "imx8mp-imdt-pico-v3-0004"
 
-source "board/freescale/common/Kconfig"
+
 source "board/imdt/common/Kconfig"
 
 endif
@@ -53,7 +52,6 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "imx8mp-imdt-pico-v3-0005"
 
-source "board/freescale/common/Kconfig"
 source "board/imdt/common/Kconfig"
 
 endif
