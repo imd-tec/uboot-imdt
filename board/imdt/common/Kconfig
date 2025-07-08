@@ -3,3 +3,21 @@ config IMDT_PICO_COMMON
 	default y
 	help
 	  Include the common functions for IMDT's Pico boards
+config IMDT_PICO_AUTO_DDR_SIZE_DETECTION
+	bool "Enable IMDT Pico DDR version detection"
+	default y
+	help
+	  Enable the DDR Size detection for IMDT Pico boards using  Ver resistors.
+	  This is used to determine the specific board configuration and memory settings.
+	  If this is false the board will use the DDR size index defined in IMDT_PICO_FORCE_DDR_SIZE
+config IMDT_PICO_FORCE_DDR_SIZE_INDEX
+	int "Force DDR size for the IMDT Pico boards"
+	default 0
+	help
+	  Force the DDR size to a specific index value. This is useful for testing
+	  purposes or when the board's memory configuration is known and fixed.
+	  0 = 1GB 
+	  1 = 2GB 
+	  2 = 4GB 
+      3 = 6GB
+	  4 = 8GB

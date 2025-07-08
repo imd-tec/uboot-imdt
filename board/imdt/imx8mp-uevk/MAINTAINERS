@@ -1,6 +1,0 @@
-IMD Technologies uEVK Board
-M:	Paul Thomson <pault@imd-tec.com>
-S:	Maintained
-F:	board/imdt/imx8mp-uevk/
-F:	include/configs/imx8mp-imdt-uevk.h
-F:	configs/imx8mp_imdt_uevk_defconfig

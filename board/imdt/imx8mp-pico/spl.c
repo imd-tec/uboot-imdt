@@ -29,6 +29,7 @@
 #include <asm/arch/ddr.h>
 #include <asm/sections.h>
 #include "../common/pico_hw_ver.h"
+#include "lpddr4_timing.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -58,10 +59,31 @@ int spl_board_boot_device(enum boot_device boot_dev_spl)
 #endif
 }
 
+static struct dram_timing_info *dram_timing_info[5] = {
+	NULL,
+	&imdt_pico_dram_timing_2g,	/* 2048 MiB */
+	&imdt_pico_dram_timing_4g,	/* 4096 MiB */
+	&imdt_pico_dram_timing_6g,	/* 6144 MiB */
+	NULL,
+};
 
 void spl_dram_init(void)
 {
-	ddr_init(&dram_timing);
+	const u16 size[] = { 1024, 2048, 4096, 6144, 8192 };
+	volatile u8 memcfg = mem_cfg_get();
+	int i;
+
+	printf("DDR:   %d MiB [0x%x]\n", size[memcfg], memcfg);
+
+	if (!dram_timing_info[memcfg]) {
+		printf("Unsupported DRAM strapping, trying lowest supported. MEMCFG=0x%x\n",
+		       memcfg);
+		for (i = 0; i < ARRAY_SIZE(dram_timing_info); i++)
+			if (dram_timing_info[i])	/* Configuration found */
+				break;
+	}
+
+	ddr_init(dram_timing_info[memcfg]);
 }
 
 void spl_board_init(void)
@@ -177,6 +199,18 @@ void board_init_f(ulong dummy)
 
 	power_init_board();
 
+	 // Initialize the hardware version pins
+	hw_ver_init();
+	int hw_ver = hw_ver_get();
+	int mem_cfg = mem_cfg_get();
+	int mem_speed = mem_speed_get();
+	 printf("HW: %s, MEM_CFG: %d, MEM_SPEED: %d\n",
+		(hw_ver == IMDT_PICO_E) ? "Pico-E" :
+		(hw_ver == IMDT_PICO_EM) ? "Pico-EM" : "Unknown",
+		mem_cfg, mem_speed);
+	#ifndef CONFIG_IMDT_PICO_AUTO_DDR_SIZE_DETECTION
+		printf("Warning: Memory size override active with index %d\n",CONFIG_IMDT_PICO_FORCE_DDR_SIZE_INDEX );
+	#endif
 	/* DDR initialization */
 	spl_dram_init();
 

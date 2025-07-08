@@ -13,7 +13,19 @@ config SYS_CONFIG_NAME
 config IMX_CONFIG
 	default "board/freescale/imx8mp_evk/imximage-8mp-lpddr4.cfg"
 
+config ADD_OVERLAYS
+    string "Additional DT overlays to apply after board_name check"
+    help
+      Space-separated list of .dtbo overlay files to apply
+      after the base DTB and optional board_name-specific overlays.
 
+config ENABLE_FDT_FIXUP_MEMORY_BANKS
+    bool "Enable FDT memory bank fixup"
+    default y
+    help
+      If enabled (default), memory bank fixups will be applied
+      to the device tree at boot. Disable this if your memory
+      layout is static and already defined in the DTB.
 source "board/imdt/common/Kconfig"
 
 endif

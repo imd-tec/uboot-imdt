@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
 * Copyright 2019 NXP
-/* Copyright 2025 IMDT
-
+* Copyright 2025 IMDT
 */
+
 // Board file for Pico-EM and Pico-E
+#include "../common/pico_hw_ver.h"
 #include <efi_loader.h>
 #include <env.h>
 #include <errno.h>
@@ -31,7 +32,7 @@
 #include <dm/uclass-internal.h>
 #include <dm/pinctrl.h>
 #include <fuse.h>
-
+#include "imdt-pico-ddr-configurations.h"
 DECLARE_GLOBAL_DATA_PTR;
 
 #define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
@@ -46,13 +47,7 @@ static iomux_v3_cfg_t const wdog_pads[] = {
 	MX8MP_PAD_GPIO1_IO02__WDOG1_WDOG_B  | MUX_PAD_CTRL(WDOG_PAD_CTRL),
 };
 
-#ifdef CONFIG_NAND_MXS
 
-static void setup_gpmi_nand(void)
-{
-	init_nand_clk();
-}
-#endif
 
 #if CONFIG_IS_ENABLED(EFI_HAVE_CAPSULE_SUPPORT)
 struct efi_fw_image fw_images[] = {
@@ -80,6 +75,8 @@ int board_early_init_f(void)
 	set_wdog_reset(wdog);
 
 	imx_iomux_v3_setup_multiple_pads(uart_pads, ARRAY_SIZE(uart_pads));
+
+	hw_ver_init();
 
 	init_uart_clk(1);
 
@@ -502,18 +499,59 @@ int board_init(void)
 	setup_typec();
 #endif
 
-#ifdef CONFIG_NAND_MXS
-	setup_gpmi_nand();
-#endif
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
 	init_usb_clk();
 #endif
 
+	/* check the board version */
+	hw_ver_init();
+	if (hw_ver_is_pico_e()) 
+	{
+		printf("\n");
+		printf("HW: Pico-E detected\n");
+		printf("\n");
+	} 
+	else if (hw_ver_is_pico_em())
+	{
+		printf("\n");
+		printf("HW: Pico-EM detected\n");
+		printf("\n");
+	}
+	else
+	{
+		printf("\n");
+		printf("***********************************\n");
+		printf("**************ERROR****************\n");
+		printf("HW: Unsupported Pico board detected\n");
+		printf("***********************************\n");
+		printf("\n");
+	}
+
 	// Disable IR LED to save power
 	disable_ir_led();
 
 	return 0;
+}
+
+void get_board_cfg(void)
+{
+	if (hw_ver_is_pico_e()) {
+		env_set("board_name", "E");
+	} else if (hw_ver_is_pico_em()) {
+		env_set("board_name", "EM");
+	} else {
+		printf("get_board_cfg: Unknown board version\n");
+		env_set("board_name", "INVALID");
+	}
+}
+
+int board_phys_sdram_size(phys_size_t *size)
+{
+	hw_ver_init();
+    u8 memcfg = mem_cfg_get();
+    *size = get_ddr_size_for_IMDT_Pico_hw_config_index(memcfg);
+    return 0;
 }
 
 int board_late_init(void)
@@ -522,8 +560,7 @@ int board_late_init(void)
 	board_late_mmc_env_init();
 #endif
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
-	env_set("board_name", "IMDT Pico-E/Pico-EM");
-	env_set("board_rev", "2GB");
+	get_board_cfg();
 #endif
 
 	return 0;
@@ -541,12 +578,6 @@ void board_prep_linux(struct bootm_headers *images)
 }
 #endif
 
-#ifdef CONFIG_ANDROID_SUPPORT
-bool is_power_key_pressed(void) {
-	return (bool)(!!(readl(SNVS_HPSR) & (0x1 << 6)));
-}
-#endif
-
 #ifdef CONFIG_SPL_MMC
 #define UBOOT_RAW_SECTOR_OFFSET 0x40
 unsigned long spl_mmc_get_uboot_raw_sector(struct mmc *mmc, unsigned long raw_sect)
@@ -561,11 +592,3 @@ unsigned long spl_mmc_get_uboot_raw_sector(struct mmc *mmc, unsigned long raw_se
 }
 #endif
 
-#ifdef CONFIG_FSL_FASTBOOT
-#ifdef CONFIG_ANDROID_RECOVERY
-int is_recovery_key_pressing(void)
-{
-	return 0; /* TODO */
-}
-#endif /* CONFIG_ANDROID_RECOVERY */
-#endif /* CONFIG_FSL_FASTBOOT */

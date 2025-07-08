@@ -1,22 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2019 NXP
- * Copyright (c) 2022 IMD Technologies
+ * Copyright 2019, 2021 NXP
+ * Copyright (c) 2025 IMD Technologies
  */
 #include "imx8mp-sec-def.h"
+
+#include "imx8mp-u-boot.dtsi"
 
 / {
 	wdt-reboot {
 		compatible = "wdt-reboot";
 		wdt = <&wdog1>;
-		u-boot,dm-spl;
-	};
-
-	firmware {
-		optee {
-			compatible = "linaro,optee-tz";
-			method = "smc";
-		};
+		bootph-pre-ram;
 	};
 
 	mcu_rdc {
@@ -39,8 +34,11 @@
 			     */
 		start-config = <
 			    RDC_MDA  RDC_MDA_SDMA3p DID1 0x0 0x0
+			    RDC_MDA  RDC_MDA_ENET1_TX DID1 0x0 0x0
+			    RDC_MDA  RDC_MDA_ENET1_RX DID1 0x0 0x0
 			    RDC_MDA  RDC_MDA_SDMA3b DID1 0x0 0x0
 			    RDC_MDA  RDC_MDA_SDMA3_SPBA2 DID1 0x0 0x0
+			    RDC_PDAP RDC_PDAP_ENET1 PDAP_D0D1_ACCESS 0x0 0x0
 			    RDC_PDAP RDC_PDAP_SAI3  PDAP_D1_ACCESS 0x0 0x0
 			    RDC_PDAP RDC_PDAP_UART4 PDAP_D1_ACCESS 0x0 0x0
 			    RDC_PDAP RDC_PDAP_GPT1  PDAP_D1_ACCESS 0x0 0x0
@@ -64,141 +62,104 @@
 	};
 };
 
-&{/soc@0} {
-	u-boot,dm-pre-reloc;
-	u-boot,dm-spl;
+&pinctrl_i2c1 {
+	bootph-all;
 };
 
-&clk {
-	u-boot,dm-spl;
-	u-boot,dm-pre-reloc;
-	/delete-property/ assigned-clocks;
-	/delete-property/ assigned-clock-parents;
-	/delete-property/ assigned-clock-rates;
-
+&pinctrl_i2c1_gpio {
+	bootph-all;
 };
 
-&osc_32k {
-	u-boot,dm-spl;
-	u-boot,dm-pre-reloc;
+&pinctrl_pmic {
+	bootph-all;
 };
 
-&osc_24m {
-	u-boot,dm-spl;
-	u-boot,dm-pre-reloc;
+&{/soc@0/bus@30800000/i2c@30a20000/pmic@25} {
+	bootph-all;
 };
 
-&aips1 {
-	u-boot,dm-spl;
-	u-boot,dm-pre-reloc;
-};
-
-&aips2 {
-	u-boot,dm-spl;
-};
-
-&aips3 {
-	u-boot,dm-spl;
-};
-
-&iomuxc {
-	u-boot,dm-spl;
+&{/soc@0/bus@30800000/i2c@30a20000/pmic@25/regulators} {
+	bootph-all;
 };
 
 &reg_usdhc2_vmmc {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 	u-boot,off-on-delay-us = <20000>;
 };
 
 &pinctrl_uart2 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
+};
+
+&pinctrl_usdhc1 {
+	bootph-pre-ram;
 };
 
 &pinctrl_usdhc2 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &pinctrl_usdhc3 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
+};
+
+&pinctrl_wdog {
+	bootph-pre-ram;
 };
 
 &gpio1 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &gpio2 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &gpio3 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &gpio4 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &gpio5 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &uart2 {
-	u-boot,dm-spl;
-};
-
-&crypto {
-	u-boot,dm-spl;
-};
-
-&sec_jr0 {
-	u-boot,dm-spl;
-};
-
-&sec_jr1 {
-	u-boot,dm-spl;
-};
-
-&sec_jr2 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &i2c1 {
-	u-boot,dm-spl;
+	bootph-all;
 };
 
 &i2c2 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &i2c3 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &i2c4 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &i2c6 {
-	u-boot,dm-spl;
-};
-
-&pinctrl_i2c1 {
-	u-boot,dm-spl;
-};
-
-&pinctrl_i2c1_gpio {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &usdhc1 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 	assigned-clocks = <&clk IMX8MP_CLK_USDHC1>;
 	assigned-clock-rates = <400000000>;
 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_400M>;
 };
 
 &usdhc2 {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 	sd-uhs-sdr104;
 	sd-uhs-ddr50;
 	assigned-clocks = <&clk IMX8MP_CLK_USDHC2>;
@@ -207,38 +168,20 @@
 };
 
 &usdhc3 {
-	u-boot,dm-spl;
-	sd-uhs-sdr104;
-	sd-uhs-ddr50;
+	bootph-pre-ram;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
 	assigned-clocks = <&clk IMX8MP_CLK_USDHC3>;
 	assigned-clock-rates = <400000000>;
 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_400M>;
 };
 
 &wdog1 {
-	u-boot,dm-spl;
-};
-
-&{/soc@0/bus@30800000/i2c@30a20000/pca9450@25} {
-	u-boot,dm-spl;
-};
-
-&{/soc@0/bus@30800000/i2c@30a20000/pca9450@25/regulators} {
-	u-boot,dm-spl;
-};
-
-&pinctrl_pmic {
-	u-boot,dm-spl;
+	bootph-pre-ram;
 };
 
 &flexspi {
 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_400M>;
-};
-
-&lcdif1 {
-	/delete-property/ assigned-clocks;
-	/delete-property/ assigned-clock-parents;
-	/delete-property/ assigned-clock-rates;
 };
 
 &mipi_dsi {
@@ -247,14 +190,8 @@
 	/delete-property/ assigned-clock-rates;
 };
 
-&usb3_0 {
-	dma-ranges = <0x40000000 0x40000000 0xc0000000>;
-	/delete-property/ power-domains;
-};
-
-&usb3_1 {
-	dma-ranges = <0x40000000 0x40000000 0xc0000000>;
-	/delete-property/ power-domains;
+&media_blk_ctrl {
+	assigned-clock-rates = <500000000>, <200000000>;
 };
 
 &usb_dwc3_0 {
