@@ -66,6 +66,7 @@
 	 "console=ttymxc1,115200\0" \
 	 "fdt_addr_r=0x43000000\0"			\
 	 "fdt_addr=0x43000000\0"			\
+	 "fdt_addr_o=0x45000000\0" \
 	 "boot_fdt=try\0" \
 	 "fdt_high=0xffffffffffffffff\0"		\
 	 "boot_fit=no\0" \
@@ -84,14 +85,14 @@
 		"fdt addr ${fdt_addr_r}; fdt resize 0x10000; " \
 		"if test \"${board_name}\" = \"E\"; then " \
 			"echo Applying pico-e overlay; " \
-			"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} imx8mp-imdt-pico-e.dtbo; " \
-			"fdt apply ${loadaddr}; " \
+			"fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr_o} imx8mp-imdt-pico-e.dtbo; " \
+			"fdt apply ${fdt_addr_o}; " \
 		"fi; " \
 		    "if test \"${apply_overlays}\" != \"\\\\\\\"\\\\\\\"\"; then " \
 			"for overlay in ${apply_overlays}; do " \
 				"echo Applying overlay: $overlay; " \
-				"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} $overlay; " \
-				"fdt apply ${loadaddr}; " \
+				"fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr_o} $overlay; " \
+				"fdt apply ${fdt_addr_o}; " \
 			"done; " \
 		"else " \
 			"echo No overlays to apply.; " \
