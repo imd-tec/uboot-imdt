@@ -6,7 +6,7 @@
 #Common file for Pico-E and Pico-EM boards
 obj-y += imx8mp_imdt_pico.o
 obj-y += imdt-pico-ddr-configuration.o
-obj-y += ../../freescale/common/
+obj-y += mmc.o
 ifdef CONFIG_SPL_BUILD
 obj-y += spl.o
 ifdef CONFIG_TARGET_IMX8MP_IMDT_PICO

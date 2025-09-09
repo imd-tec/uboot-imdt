@@ -556,13 +556,8 @@ int board_phys_sdram_size(phys_size_t *size)
 
 int board_late_init(void)
 {
-#ifdef CONFIG_ENV_IS_IN_MMC
-	board_late_mmc_env_init();
-#endif
-#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+	board_late_mmc_env_init();	
 	get_board_cfg();
-#endif
-
 	return 0;
 }
 
