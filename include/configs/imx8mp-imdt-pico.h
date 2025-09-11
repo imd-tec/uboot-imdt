@@ -25,11 +25,11 @@
 
 
 #define CFG_MXC_UART_BASE		UART2_BASE_ADDR
-  
+
 #define PHY_ANEG_TIMEOUT 20000
 
 #define CFG_SYS_FSL_USDHC_NUM	2
- 
+
 #define CFG_SYS_UBOOT_BASE	(QSPI0_AMBA_BASE + CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR * 512)
 
 /* Initial environment variables */
