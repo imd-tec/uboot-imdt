@@ -120,6 +120,15 @@ config FSL_FASTBOOT
 	help
 	  This enables FSL implementation for Android fastboot.
 
+config FASTBOOT_EMMC_MEMINFO_DEVICE
+	int "Define FASTBOOT eMMC MEMINFO device"
+	depends on FSL_FASTBOOT
+	default 2
+	help
+	  The fastboot "getvar meminfo" command requires additional information
+	  regarding the eMMC device. Define this to the eMMC device number that
+	  fastboot should use to get memory info.
+
 config ANDROID_RECOVERY
 	bool "Enable the recovery boot function"
 	depends on FSL_FASTBOOT

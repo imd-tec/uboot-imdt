@@ -20,8 +20,9 @@
 #include <asm/setup.h>
 #include <env.h>
 #include <version.h>
-#include "fb_memtest.h"
 #include "mapmem.h"
+#include "fb_emmc.h"
+#include "fb_memtest.h"
 
 #ifdef CONFIG_AVB_SUPPORT
 #include <dt_table.h>
@@ -157,6 +158,10 @@ static int get_single_var(char *cmd, char *response)
 	struct mmc *mmc;
 	int mmc_dev_no;
 	int blksz;
+	ulong capacity = 0;
+	ulong version = 0;
+	ulong manufacturer_id = 0;
+	ulong pre_eol_health = 0;
 
 	chars_left = FASTBOOT_RESPONSE_LEN - strlen(response) - 1;
 
@@ -237,6 +242,20 @@ static int get_single_var(char *cmd, char *response)
 		}
 	} else if (!strcmp_l1("product", cmd)) {
 		strncat(response, CONFIG_TARGET_PRODUCT_NAME, chars_left);
+	}
+	else if (!strcmp_l1("emmcinfo", cmd)) {
+		if (fastboot_emmc_get_emmc_info(CONFIG_FASTBOOT_EMMC_MEMINFO_DEVICE, &capacity, &version, &manufacturer_id, &pre_eol_health	) != 0) {
+			strncat(response, "FAILCannot get emmc info", chars_left);
+			return -1;
+		}
+		strncat(response, "V:", chars_left);
+		snprintf(response + strlen(response), chars_left, "0x%lx,", version);
+		strncat(response, " ManID:", chars_left);
+		snprintf(response + strlen(response), chars_left, "0x%lx,", manufacturer_id);
+		strncat(response, " Cap:", chars_left);
+		snprintf(response + strlen(response), chars_left, "0x%lx,", capacity);
+		strncat(response, " PreEOL:", chars_left);
+		snprintf(response + strlen(response), chars_left, "0x%lx", pre_eol_health);
 	}
 	else if (!strcmp_l1("memtest", cmd)) {
 		ulong start = CONFIG_SYS_MEMTEST_START;
