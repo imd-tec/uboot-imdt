@@ -84,12 +84,28 @@ static int gpio_read_input(uint32_t gpio_base, uint32_t pin)
     return (val >> pin) & 0x1;
 }
 
-static int s_hw_ver, s_mem_cfg, s_mem_speed;
 
-void hw_ver_init(void) {
+void hw_ver_init() {
 
+}
+
+void init_hw_pins()
+{
 	imx_iomux_v3_setup_multiple_pads(hw_ver_pads, ARRAY_SIZE(hw_ver_pads));
+	// Configure all as inputs
+	gpio_set_input(GPIO4_BASE_ADDR, 22);
+	gpio_set_input(GPIO4_BASE_ADDR, 23);
+	gpio_set_input(GPIO4_BASE_ADDR, 0);
+	gpio_set_input(GPIO4_BASE_ADDR, 1);
+	gpio_set_input(GPIO1_BASE_ADDR, 1);
+	gpio_set_input(GPIO1_BASE_ADDR, 11);
+}
 
+/**
+ *
+ */
+int hw_ver_get(void) {
+	init_hw_pins();
 	// Configure all as inputs
 	gpio_set_input(GPIO4_BASE_ADDR, 22);
 	gpio_set_input(GPIO4_BASE_ADDR, 23);
@@ -101,38 +117,27 @@ void hw_ver_init(void) {
 	// Read values directly
 	int hw0 = gpio_read_input(GPIO4_BASE_ADDR, 22);
 	int hw1 = gpio_read_input(GPIO4_BASE_ADDR, 23);
-	s_hw_ver = (hw1 << 1) | hw0;
+	return (hw1 << 1) | hw0;
+}
 
+int mem_cfg_get(void) {
+	init_hw_pins();
 	int cfg0 = gpio_read_input(GPIO4_BASE_ADDR, 0);
 	int cfg1 = gpio_read_input(GPIO4_BASE_ADDR, 1);
 	int cfg2 = gpio_read_input(GPIO1_BASE_ADDR, 1);
-	s_mem_cfg = (cfg2 << 2) | (cfg1 << 1) | cfg0;
-
-	s_mem_speed = gpio_read_input(GPIO1_BASE_ADDR, 11);
-
+	int s_mem_cfg = (cfg2 << 2) | (cfg1 << 1) | cfg0;
 	#ifndef CONFIG_IMDT_PICO_AUTO_DDR_SIZE_DETECTION 
 	// Force memory size if configured
 		printf("Forcing memory size to be configuration number: %d \n", CONFIG_IMDT_PICO_FORCE_DDR_SIZE_INDEX);
 		s_mem_cfg = CONFIG_IMDT_PICO_FORCE_DDR_SIZE_INDEX;
 	#endif
-
-	// Disable pull-ups if needed (optional)
-	imx_iomux_v3_setup_multiple_pads(hw_ver_no_pull_pads, ARRAY_SIZE(hw_ver_no_pull_pads));
-}
-
-/**
- *
- */
-int hw_ver_get(void) {
-	return s_hw_ver;
-}
-
-int mem_cfg_get(void) {
 	return  s_mem_cfg;
 }
 
 int mem_speed_get(void) {
-	return s_mem_speed;
+	init_hw_pins();
+	
+	return gpio_read_input(GPIO1_BASE_ADDR, 11);
 }
 
 void disable_ir_led(void)
@@ -150,13 +155,15 @@ void disable_ir_led(void)
  *
  */
 bool hw_ver_is_pico_em(void) {
-	return (s_hw_ver == IMDT_PICO_EM);
+	int ver = hw_ver_get();
+	return (ver == IMDT_PICO_EM);
 }
 
 /**
  *
  */
 bool hw_ver_is_pico_e(void) {
-	return (s_hw_ver == IMDT_PICO_E);
+	int ver = hw_ver_get();
+	return (ver == IMDT_PICO_E);
 }
 
