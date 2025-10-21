@@ -20,6 +20,8 @@
 #include <asm/setup.h>
 #include <env.h>
 #include <version.h>
+#include "fb_memtest.h"
+#include "mapmem.h"
 
 #ifdef CONFIG_AVB_SUPPORT
 #include <dt_table.h>
@@ -235,6 +237,36 @@ static int get_single_var(char *cmd, char *response)
 		}
 	} else if (!strcmp_l1("product", cmd)) {
 		strncat(response, CONFIG_TARGET_PRODUCT_NAME, chars_left);
+	}
+	else if (!strcmp_l1("memtest", cmd)) {
+		ulong start = CONFIG_SYS_MEMTEST_START;
+		ulong end = CONFIG_SYS_MEMTEST_END;
+		vu_long *buf;
+		ulong pattern = 0x20252025DEADBEEF; // If f there's a memory crash it will be obvious it was due to this test
+		printf("Starting memory test between 0x%lx and 0x%lx\n", start, end);
+		debug("%s:%d: start %#08lx end %#08lx, with size of %#08lx MB\n", __func__, __LINE__,
+	      start, end, (end - start)/(1024*1024));
+		buf = map_sysmem(start, end - start);
+		bool passed = true;
+		for (int i = 0; i < CONFIG_FASTBOOT_MEMTEST_ITERATIONS; i++) {
+			if (fastboot_mem_test(buf, start, end, pattern, i, 1) != 0) 
+			{
+				printf("Fastboot: Memory test iteration %d failed\n", i);
+				passed = false;
+				break;
+			}
+		}
+		if (passed)
+		{
+			printf("Fastboot: Memory test passed\n");
+			strncat(response, "Memory test passed", chars_left);
+		}
+		else
+		{
+			printf("Fastboot: Memory test failed\n");
+			strncat(response, "Memory test failed", chars_left);
+			return -1;
+		}
 	}
 #ifdef CONFIG_IMX_TRUSTY_OS
         else if(!strcmp_l1("at-attest-uuid", cmd)) {

@@ -294,4 +294,12 @@ config FASTBOOT_CMD_OEM_CONSOLE
 
 endif # FASTBOOT
 
+config FASTBOOT_MEMTEST_ITERATIONS
+	int "Number of iterations for fastboot memory test"
+	depends on FASTBOOT
+	default 1
+	help
+	  Define the number of iterations to run the memory test when
+	  the "fastboot getvar memtest" command is issued.
+
 endmenu
