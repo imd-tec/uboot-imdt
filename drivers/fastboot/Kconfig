@@ -128,6 +128,12 @@ config FASTBOOT_EMMC_MEMINFO_DEVICE
 	  The fastboot "getvar meminfo" command requires additional information
 	  regarding the eMMC device. Define this to the eMMC device number that
 	  fastboot should use to get memory info.
+	  
+config FASTBOOT_IMDT_OEM_COMMANDS
+	bool "Enable IMDT OEM fastboot commands"
+	depends on FSL_FASTBOOT
+	help
+	  This enables the IMDT OEM fastboot commands.
 
 config ANDROID_RECOVERY
 	bool "Enable the recovery boot function"

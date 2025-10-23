@@ -19,6 +19,9 @@
 #include <asm/arch/sys_proto.h>
 #include <asm/setup.h>
 #include <env.h>
+#ifdef CONFIG_FASTBOOT_IMDT_OEM_COMMANDS
+#include "fb_imdt_oem_commands.h"
+#endif
 #ifdef CONFIG_ANDROID_RECOVERY
 #include <recovery.h>
 #endif
@@ -1284,6 +1287,12 @@ static const struct {
 			.command = "continue",
 			.dispatch = okay,
 		},
+#ifdef CONFIG_FASTBOOT_IMDT_OEM_COMMANDS
+		[FASTBOOT_COMMAND_OEM_RUN] = {
+			.command = "oem",
+			.dispatch = run_imdt_oem_cmd,
+		},
+#endif
 #ifdef CONFIG_FASTBOOT_FLASH
 		[FASTBOOT_COMMAND_FLASH] = {
 			.command = "flash",

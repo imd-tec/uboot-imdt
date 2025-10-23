@@ -248,44 +248,9 @@ static int get_single_var(char *cmd, char *response)
 			strncat(response, "FAILCannot get emmc info", chars_left);
 			return -1;
 		}
-		strncat(response, "V:", chars_left);
-		snprintf(response + strlen(response), chars_left, "0x%lx,", version);
-		strncat(response, " ManID:", chars_left);
-		snprintf(response + strlen(response), chars_left, "0x%lx,", manufacturer_id);
-		strncat(response, " Cap:", chars_left);
-		snprintf(response + strlen(response), chars_left, "0x%lx,", capacity);
-		strncat(response, " PreEOL:", chars_left);
-		snprintf(response + strlen(response), chars_left, "0x%lx", pre_eol_health);
-	}
-	else if (!strcmp_l1("memtest", cmd)) {
-		ulong start = CONFIG_SYS_MEMTEST_START;
-		ulong end = CONFIG_SYS_MEMTEST_END;
-		vu_long *buf;
-		ulong pattern = 0x20252025DEADBEEF; // If f there's a memory crash it will be obvious it was due to this test
-		printf("Starting memory test between 0x%lx and 0x%lx\n", start, end);
-		debug("%s:%d: start %#08lx end %#08lx, with size of %#08lx MB\n", __func__, __LINE__,
-	      start, end, (end - start)/(1024*1024));
-		buf = map_sysmem(start, end - start);
-		bool passed = true;
-		for (int i = 0; i < CONFIG_FASTBOOT_MEMTEST_ITERATIONS; i++) {
-			if (fastboot_mem_test(buf, start, end, pattern, i, 1) != 0) 
-			{
-				printf("Fastboot: Memory test iteration %d failed\n", i);
-				passed = false;
-				break;
-			}
-		}
-		if (passed)
-		{
-			printf("Fastboot: Memory test passed\n");
-			strncat(response, "Memory test passed", chars_left);
-		}
-		else
-		{
-			printf("Fastboot: Memory test failed\n");
-			strncat(response, "Memory test failed", chars_left);
-			return -1;
-		}
+		snprintf(response + strlen(response), chars_left,
+				"capacity:0x%lx,version:0x%lx,manufacturer_id:0x%lx,pre_eol_info:0x%lx",
+				capacity, version, manufacturer_id, pre_eol_health);
 	}
 #ifdef CONFIG_IMX_TRUSTY_OS
         else if(!strcmp_l1("at-attest-uuid", cmd)) {
