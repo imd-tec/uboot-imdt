@@ -48,6 +48,19 @@
 	"fdt_addr=0x43000000\0"			\
 	"fdt_addr_o=0x45000000\0" \
 	"boot_fdt=try\0" \
+	"altbootcmd=echo WARNING!!: Rollback occurring due to bootcount limit being reached ...; " \
+		"if test \"${mmcpart}\" = \"2\"; then " \
+			"setenv mmcpart 4; " \
+			"setenv mmcroot /dev/mmcblk${mmcdev}p5 rootwait rw; " \
+		"else " \
+			"setenv mmcpart 2; " \
+			"setenv mmcroot /dev/mmcblk${mmcdev}p3 rootwait rw; " \
+		"fi; " \
+		"setenv upgrade_available; " \
+		"setenv bootcount 0; " \
+		"setenv failed_update 1; " \
+		"saveenv; " \
+		"run bsp_bootcmd;\0" \
 	"fdt_high=0xffffffffffffffff\0"		\
 	"fdtfile=" __stringify(CONFIG_DEFAULT_FDT_FILE) "\0" \
 	"apply_overlays="__stringify(CONFIG_ADD_OVERLAYS)"\0" \
