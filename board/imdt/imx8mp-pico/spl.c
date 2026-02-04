@@ -59,11 +59,13 @@ int spl_board_boot_device(enum boot_device boot_dev_spl)
 #endif
 }
 
-static struct dram_timing_info *dram_timing_info[5] = {
+static struct dram_timing_info *dram_timing_info[] = {
 	NULL,
 	&imdt_pico_dram_timing_2g,	/* 2048 MiB */
-	&imdt_pico_dram_timing_4g,	/* 4096 MiB */
+	//&imdt_pico_dram_timing_4g,	/* 4096 MiB */ // Removed due to limited memory size
 	&imdt_pico_dram_timing_6g,	/* 6144 MiB */
+	NULL,
+	&imdt_pico_dram_timing_8g,	/* 8192 MiB */
 	NULL,
 };
 
@@ -71,16 +73,27 @@ void spl_dram_init(void)
 {
 	const u16 size[] = { 1024, 2048, 4096, 6144, 8192 };
 	volatile u8 memcfg = mem_cfg_get();
-	int i;
 
-	printf("DDR:   %d MiB [0x%x]\n", size[memcfg], memcfg);
+	printf("DDR:   %d MiB [0x%x]\n", (memcfg < ARRAY_SIZE(size) ? size[memcfg] : -1), memcfg);
 
-	if (!dram_timing_info[memcfg]) {
-		printf("Unsupported DRAM strapping, trying lowest supported. MEMCFG=0x%x\n",
-		       memcfg);
-		for (i = 0; i < ARRAY_SIZE(dram_timing_info); i++)
-			if (dram_timing_info[i])	/* Configuration found */
+	if ((memcfg >= ARRAY_SIZE(dram_timing_info)) ||  (!dram_timing_info[memcfg])) {
+		int i, valid_index = -1;
+
+		printf("Unsupported DRAM strapping, trying lowest supported. MEMCFG=0x%x\n", memcfg);
+
+		for (i = 0; i < ARRAY_SIZE(dram_timing_info); i++) {
+			if (dram_timing_info[i]) {
+				valid_index = i;
 				break;
+			}
+		}
+
+		if (valid_index == -1) {
+			printf("No valid DRAM configuration found\n");
+			hang();
+		}
+
+		memcfg = valid_index;
 	}
 
 	ddr_init(dram_timing_info[memcfg]);
@@ -204,7 +217,9 @@ void board_init_f(ulong dummy)
 	int hw_ver = hw_ver_get();
 	int mem_cfg = mem_cfg_get();
 	int mem_speed = mem_speed_get();
-	 printf("HW: %s, MEM_CFG: %d, MEM_SPEED: %d\n",
+	printf("---------------------------------\n");
+	printf("Internal SPL build for 8GB support\n");
+	printf("HW: %s, MEM_CFG: %d, MEM_SPEED: %d\n",
 		(hw_ver == IMDT_PICO_E) ? "Pico-E" :
 		(hw_ver == IMDT_PICO_EM) ? "Pico-EM" : "Unknown",
 		mem_cfg, mem_speed);

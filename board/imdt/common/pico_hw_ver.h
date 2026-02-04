@@ -17,8 +17,9 @@ enum pico_hw_version {
 
 enum pico_mem_size {
 	IMDT_PICO_MEM_2GB = 1,
-	IMDT_PICO_MEM_4GB = 2,
-	IMDT_PICO_MEM_6GB = 3
+	//IMDT_PICO_MEM_4GB = 2, // Removed due to limited memory size
+	IMDT_PICO_MEM_6GB = 3,
+	IMDT_PICO_MEM_8GB = 4,
 };
 
 enum pico_mem_speed {

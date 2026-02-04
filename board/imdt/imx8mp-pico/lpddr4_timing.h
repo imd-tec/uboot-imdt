@@ -7,7 +7,8 @@
 #define __LPDDR4_TIMING_H__
 
 extern struct dram_timing_info imdt_pico_dram_timing_2g;
-extern struct dram_timing_info imdt_pico_dram_timing_4g;
+//extern struct dram_timing_info imdt_pico_dram_timing_4g; // Removed due to limited memory size
 extern struct dram_timing_info imdt_pico_dram_timing_6g;
+extern struct dram_timing_info imdt_pico_dram_timing_8g;
 
 #endif /* __LPDDR4_TIMING_H__ */

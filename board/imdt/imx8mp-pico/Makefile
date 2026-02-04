@@ -10,6 +10,6 @@ obj-y += mmc.o
 ifdef CONFIG_SPL_BUILD
 obj-y += spl.o
 ifdef CONFIG_TARGET_IMX8MP_IMDT_PICO
-obj-$(CONFIG_IMX8M_LPDDR4) += lpddr4_timing_2g.o lpddr4_timing_4g.o lpddr4_timing_6g.o
+obj-$(CONFIG_IMX8M_LPDDR4) += lpddr4_timing_2g.o lpddr4_timing_6g.o lpddr4_timing_8g.o
 endif
 endif
